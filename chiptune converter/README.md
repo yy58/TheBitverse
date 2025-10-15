@@ -201,15 +201,6 @@ pip install pyaudio
 - Ensure no other applications are using the audio device
 - Try running with administrator/sudo privileges
 
-## 🎯 Future Enhancements
-
-- [ ] Add more waveform types (noise, sawtooth)
-- [ ] Implement arpeggio and vibrato effects
-- [ ] Add preset sound profiles (NES, Game Boy, C64)
-- [ ] MIDI file import/export
-- [ ] Visual waveform display
-- [ ] Multi-track recording
-- [ ] VST plugin version
 
 ## 📝 License
 
@@ -230,7 +221,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 **YYG**
 - GitHub: [@yy58](https://github.com/yy58)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Inspired by classic 8-bit game consoles (NES, Game Boy, C64)
 - Built with Python audio processing libraries
@@ -244,6 +235,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ---
 
-**Made with ❤️ and nostalgia for SD5913 Creative Programming**
+**Made with ❤️ and nostalgia**
 
 🎮 *Press START to continue...* 🎮
