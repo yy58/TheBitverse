@@ -1,0 +1,16 @@
+# The Bitverse - 8-Bit Chiptune Converter
+# Python Dependencies
+
+# Audio processing
+pydub>=0.25.1
+scipy>=1.9.0
+numpy>=1.24.0
+
+# Audio playback
+pyaudio>=0.2.13
+
+# File handling (for pydub)
+# Note: You'll also need ffmpeg installed on your system
+# macOS: brew install ffmpeg
+# Linux: sudo apt-get install ffmpeg
+# Windows: Download from ffmpeg.org
