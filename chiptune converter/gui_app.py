@@ -270,12 +270,12 @@ class ChiptuneApp:
         # Create keyboard layout
         layout_text = """
 Left Hand (Low Octave):
-    V   F   D   S   A   R   E   W   Q
-    C3  D3  E3  F3  G3  A3  B3  C4  D4
+    V   F   D   S   A   T   R   E   W   Q
+    C3  D3  E3  F3  G3  A3  B3  C4  D4  E4
 
 Right Hand (High Octave):
-    N   J   K   L   ;   U   I   O   P
-    E4  F4  G4  A4  B4  C5  D5  E5  F5
+    B   H   J   K   L   Y   U   I   O   P
+    F4  G4  A4  B4  C5  D5  E5  F5  G5  A5
                 """
         
         layout_label = tk.Label(
@@ -429,19 +429,29 @@ Right Hand (High Octave):
     
     def on_key_press(self, event):
         """Handle key press: play note immediately when pressed."""
-        key = event.char.lower()
-        if not key:
-            return
-        if key in self.keyboard.NOTE_FREQUENCIES:
-            freq = self.keyboard.NOTE_FREQUENCIES[key]
-            threading.Thread(target=self.keyboard.play_note, args=(freq,), daemon=True).start()
-            self.recording_status.config(text=f"♪ Played: {key.upper()} ({freq:.2f} Hz)")
+        try:
+            key = event.char.lower()
+            if not key:
+                return
+            # Prevent retriggering if key is already pressed
+            if key in self.pressed_keys:
+                return
+            if key in self.keyboard.NOTE_FREQUENCIES:
+                self.pressed_keys.add(key)
+                freq = self.keyboard.NOTE_FREQUENCIES[key]
+                threading.Thread(target=self.keyboard.play_note, args=(freq,), daemon=True).start()
+                self.recording_status.config(text=f"♪ Played: {key.upper()} ({freq:.2f} Hz)")
+        except Exception as e:
+            print(f"Key press error: {e}")
 
     def on_key_release(self, event):
         """Handle key release: mark key as released (optional early stop can be added)."""
-        key = event.char.lower()
-        if key in self.pressed_keys:
-            self.pressed_keys.remove(key)
+        try:
+            key = event.char.lower()
+            if key in self.pressed_keys:
+                self.pressed_keys.remove(key)
+        except Exception as e:
+            print(f"Key release error: {e}")
     
     def toggle_recording(self):
         """Toggle recording on/off"""
