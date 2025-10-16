@@ -439,8 +439,9 @@ Right Hand (High Octave):
             if key in self.keyboard.NOTE_FREQUENCIES:
                 self.pressed_keys.add(key)
                 freq = self.keyboard.NOTE_FREQUENCIES[key]
-                threading.Thread(target=self.keyboard.play_note, args=(freq,), daemon=True).start()
-                self.recording_status.config(text=f"♪ Played: {key.upper()} ({freq:.2f} Hz)")
+                wave = self.wave_type.get()
+                threading.Thread(target=self.keyboard.play_note, args=(freq, 0.3, wave), daemon=True).start()
+                self.recording_status.config(text=f"♪ Played: {key.upper()} ({freq:.2f} Hz) - {wave.capitalize()}")
         except Exception as e:
             print(f"Key press error: {e}")
 
