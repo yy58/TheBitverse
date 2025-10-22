@@ -34,41 +34,12 @@ class EnhancedVisualizer:
         self.audio_data = None
         self.sr = 44100  # Default sample rate
         self.vis_mode = 0  # Default visualization mode
-        
-        # Initialize frequency history for waveform visualization
-        self.freq_history = []
-        self.freq_history_size = 10  # Number of frames to keep in history
         self.color_offset = 0.0  # For color cycling
         self.start_time = time.time()  # For timing animations
         
-        # Initialize empty frequency data
-        self.frequency_data = [0.5] * 300
-        
-        # For frequency wave visualization
-        self.frequency_data = []
-        self.freq_history = []
-        self.max_history = 20  # Store recent frequency data for trails
-        
-        # Control panel at bottom
-        self.control_frame = tk.Frame(self.root, bg="#111111", height=40)
-        self.control_frame.pack(side=tk.BOTTOM, fill=tk.X)
-        
-        # Mode selection buttons
-        modes = ["Pixel Waves", "Fractal Tunnel", "Audio Particles", "Spectrum Grid", "Frequency Wave", "Mixed Visuals"]
-        for i, mode in enumerate(modes):
-            btn = tk.Button(
-                self.control_frame,
-                text=mode,
-                bg="#222222",
-                fg="#00ffff",
-                activebackground="#444444",
-                activeforeground="#00ffff",
-                relief=tk.FLAT,
-                command=lambda m=i: self.set_mode(m),
-                padx=10,
-                pady=5
-            )
-            btn.pack(side=tk.LEFT, padx=5, pady=5)
+        # Remove control panel - we don't need it anymore
+        # self.control_frame = tk.Frame(self.root, bg="#111111", height=40)
+        # self.control_frame.pack(side=tk.BOTTOM, fill=tk.X)
         
         # Initial draw
         self.draw_welcome()
@@ -150,49 +121,8 @@ class EnhancedVisualizer:
         # Start visualization thread
         threading.Thread(target=self._run_visualization, daemon=True).start()
     
-    def _generate_synthetic_waveform(self, y, sr):
-        """Generate synthetic waveform data for visualization"""
-        try:
-            # For better waveform visualization, we'll extract the actual waveform
-            # and downsample it to a reasonable number of points
-            import numpy as np
-            
-            # Number of points to use in visualization
-            num_points = 300  # Enough points for smooth waveform
-            
-            # If audio is too long, take a representative segment
-            if len(y) > sr * 10:  # If longer than 10 seconds
-                # Take a segment from a third of the way through
-                start_idx = len(y) // 3
-                segment_size = min(sr * 2, len(y) - start_idx)  # 2-second segment
-                segment = y[start_idx:start_idx + segment_size]
-            else:
-                segment = y
-                
-            # Resample to get evenly spaced points
-            indices = np.linspace(0, len(segment) - 1, num_points).astype(int)
-            waveform_data = segment[indices]
-            
-            # Normalize to 0-1 range
-            max_val = np.max(np.abs(waveform_data)) if len(waveform_data) > 0 else 1
-            if max_val > 0:
-                waveform_data = (waveform_data / max_val + 1) / 2  # Convert -1,1 to 0,1 range
-                
-            return waveform_data.tolist()
-            
-        except Exception as e:
-            print(f"Error generating synthetic waveform: {e}")
-            return [0.5] * 300  # Return flat line on error
-    
     def _run_visualization(self):
         """Run visualization loop"""
-        # Generate synthetic waveform data for better visualization
-        waveform_data = self._generate_synthetic_waveform(self.audio_data, self.sr)
-        
-        # Initialize frequency history with waveform data for immediate display
-        for i in range(self.freq_history_size):
-            self.freq_history.append(waveform_data.copy())
-        
         # Analyze audio in chunks
         frame_size = int(self.sr * 0.1)  # 0.1 second chunks
         total_frames = len(self.audio_data) // frame_size
@@ -248,11 +178,6 @@ class EnhancedVisualizer:
                 # Normalize
                 if np.max(self.frequency_data) > 0:
                     self.frequency_data = self.frequency_data / np.max(self.frequency_data)
-                
-                # Add to history for trails
-                self.freq_history.append(self.frequency_data)
-                if len(self.freq_history) > self.max_history:
-                    self.freq_history.pop(0)
             else:
                 centroid = 1000
                 flatness = 0.1
@@ -328,7 +253,7 @@ class EnhancedVisualizer:
             return [0.5] * 300
     
     def _draw_frame(self, features):
-        """Draw a visualization frame based on current mode"""
+        """Draw a visualization frame - kaomoji art only"""
         if not self.running:
             return
         
@@ -347,28 +272,11 @@ class EnhancedVisualizer:
             self.running = False
             return
         
-        # Update color cycling - slower for more stable appearance
+        # Update color cycling
         self.color_offset = (self.color_offset + 0.005) % 1.0
         
-        # For a stable waveform experience, prioritize the frequency wave visualization
-        if 'frequency_data' in features and len(features['frequency_data']) > 0:
-            # Get raw waveform
-            raw_waveform = features['frequency_data']
-            
-            # Apply smoothing if needed
-            if len(raw_waveform) < 100:
-                # Smooth the waveform for better visualization
-                smoothed = self._generate_smoother_waveform(raw_waveform)
-                features['frequency_data'] = smoothed
-        
-        # Update frequency history
-        if 'frequency_data' in features:
-            self.freq_history.append(features['frequency_data'])
-            if len(self.freq_history) > self.freq_history_size:
-                self.freq_history.pop(0)
-        
-        # Always use oscilloscope style visualization for waveforms
-        self._draw_frequency_wave(width, height, features)
+        # Always use kaomoji visualization
+        self._draw_ascii_art_animation(width, height, features)
     
     def _draw_pixel_waves(self, width, height, features):
         """Draw pixel-based waveform visualization"""
@@ -817,21 +725,24 @@ class EnhancedVisualizer:
                 )
     
     def _draw_ascii_art_animation(self, width, height, features):
-        """Draw animated ASCII art visualization synchronized with audio features"""
+        """Draw animated ASCII art visualization with kaomoji patterns like the screenshot"""
         import math
         import random
+        import colorsys
         
         # Extract features for ASCII generation
         amplitude = features['rms'] * 8
         centroid = features.get('centroid', 2000) / 5000
         is_beat = features.get('is_beat', False)
         
-        # Character sets for different intensity levels
-        light_chars = ['.', '·', ':', '·', '˙', '˚', '˚', '˙', '·', '⋅']
-        medium_chars = ['=', '+', '*', 'o', 'O', '°', '×', '⊕', '⊙', '◦']
-        heavy_chars = ['█', '▓', '▒', '░', '■', '□', '▪', '▫', '▬', '▲', '▼', '◢', '◣', '◤', '◥']
+        # Background - plain black
+        self.canvas.create_rectangle(0, 0, width, height, fill="#000000", outline="")
         
-        # Enhanced kaomoji collection - more varied expressions
+        # Character sets for background ASCII pattern
+        light_chars = ['.', '·', ':', '˙', '˚', '⋅', '+', '×', '*']
+        medium_chars = ['=', '+', '*', 'o', 'O', '°', '×', '⊕', '⊙', '◦']
+        
+        # Enhanced kaomoji collection
         kaomoji = [
             "(^_^)", "(≧◡≦)", "ヽ(・∀・)ﾉ", "(●'◡'●)", "ヾ(≧▽≦*)o", "\\(★ω★)/", "(-_-)", "(￣▽￣)",
             "(づ￣ ³￣)づ", "(｡♥‿♥｡)", "ლ(´ڡ`ლ)", "(╯°□°）╯︵ ┻━┻", "┬─┬ノ( º _ ºノ)",
@@ -839,49 +750,43 @@ class EnhancedVisualizer:
             "(ノಠ益ಠ)ノ彡", "ʕ•ᴥ•ʔ", "(｡◕‿◕｡)", "(✿◠‿◠)", "(◡‿◡✿)", "(◕‿◕✿)", "(◠﹏◠)"
         ]
         
+        # Music symbol characters
         symbol_chars = ["♪", "♫", "♬", "♩", "♭", "♮", "♯", "✧", "✦", "✩", "✪", "✫", "✬", "✭", "✮", "✯", "✰"]
         
-        # Time-based animation variables
+        # Time-based animation
         timestamp = time.time()
-        animation_speed = 0.5 + amplitude * 2  # Speed affected by sound amplitude
+        animation_speed = 0.5 + amplitude * 2
         
-        # Create ASCII grid dimensions (smaller cells for denser effect)
-        cell_size = 16  # Smaller cells for more detailed ASCII patterns
+        # Create ASCII grid for background (denser grid)
+        cell_size = 12
         grid_width = width // cell_size
         grid_height = height // cell_size
         
-        # Draw background patterns first - use light characters
+        # Draw background ASCII pattern with very small characters
         for y in range(grid_height):
             for x in range(grid_width):
-                # Skip some positions for varied density
-                if random.random() < 0.7:
+                # More dense background
+                if random.random() < 0.5:
                     continue
-                    
-                # Position in canvas
+                
                 pos_x = int(x * cell_size)
                 pos_y = int(y * cell_size)
                 
-                # Wave pattern with animation for dynamic selection
+                # Wave pattern
                 wave_val = math.sin(x * 0.2 + y * 0.1 + timestamp * animation_speed) * math.cos(y * 0.1 + x * 0.05 + timestamp * 0.7)
                 
-                # Choose character based on position and audio features
-                if random.random() < 0.8:
-                    # Regular ASCII characters
-                    if abs(wave_val) < 0.3:
-                        char = random.choice(light_chars)
-                        size = int(8 + 2 * amplitude)
-                        color = f"#{int(80 + 40*wave_val):02x}{int(100 + 50*wave_val):02x}{int(120 + 40*wave_val):02x}"
-                    else:
-                        char = random.choice(medium_chars)
-                        size = int(9 + 3 * amplitude)
-                        color = f"#{int(100 + 50*wave_val):02x}{int(120 + 60*wave_val):02x}{int(140 + 50*wave_val):02x}"
+                # Choose character
+                if abs(wave_val) < 0.3:
+                    char = random.choice(light_chars)
+                    size = int(6 + 1 * amplitude)
+                    # Dark gray for background
+                    color = "#444444"
                 else:
-                    # Occasional box drawing characters for structure
-                    char = random.choice(heavy_chars)
-                    size = int(10 + 4 * amplitude)
-                    color = f"#{int(120 + 60*wave_val):02x}{int(150 + 70*wave_val):02x}{int(160 + 60*wave_val):02x}"
+                    char = random.choice(medium_chars)
+                    size = int(7 + 1 * amplitude)
+                    color = "#555555"
                 
-                # Draw the ASCII character
+                # Draw background ASCII
                 self.canvas.create_text(
                     int(pos_x + cell_size/2),
                     int(pos_y + cell_size/2),
@@ -891,274 +796,169 @@ class EnhancedVisualizer:
                     anchor="center"
                 )
         
-        # Add floating music symbols that move with the beat
-        num_symbols = int(10 + amplitude * 10)
-        for i in range(num_symbols):
-            # Position using wave equations for smooth movement
-            x = int(width * (0.5 + 0.4 * math.sin(timestamp * (0.5 + i * 0.05) + i * 0.2)))
-            y = int(height * (0.5 + 0.4 * math.cos(timestamp * (0.3 + i * 0.04) + i * 0.3)))
-            
-            # Select symbol and styling
-            symbol = random.choice(symbol_chars)
-            
-            # Size varies with amplitude and beat
-            size = int(14 + 12 * amplitude * (1.0 + 0.5 * math.sin(timestamp * 2 + i)))
-            
-            # Color cycles over time with audio features
-            hue = (timestamp * 0.1 + i * 0.1) % 1.0
-            r, g, b = [int(c * 255) for c in colorsys.hsv_to_rgb(hue, 0.7 + centroid * 0.3, 0.9)]
-            color = f"#{r:02x}{g:02x}{b:02x}"
-            
-            # Draw the symbol with glow effect for highlights
-            if is_beat and random.random() < 0.3:
-                # Add glow effect on beat
-                glow_size = size * 1.2
+        # Add colorful music symbols - more symbols for richer effect
+        # Show more symbols, distributed nicely
+        if amplitude > 0.2 or is_beat:
+            num_symbols = int(15 + amplitude * 25) if is_beat else int(8 + amplitude * 12)
+            for i in range(num_symbols):
+                # Position using wave equations
+                x = int(width * (0.5 + 0.45 * math.sin(timestamp * (0.5 + i * 0.03) + i * 0.2)))
+                y = int(height * (0.5 + 0.45 * math.cos(timestamp * (0.3 + i * 0.025) + i * 0.3)))
+                
+                # Ensure within bounds
+                x = max(10, min(width - 10, x))
+                y = max(10, min(height - 10, y))
+                
+                # Select symbol
+                symbol = random.choice(symbol_chars)
+                
+                # Varied sizes for visual interest
+                size = random.choice([12, 14, 16])
+                
+                # Vibrant colors like in the screenshot - fix color calculation
+                hue = (timestamp * 0.2 + i / max(1, num_symbols)) % 1.0
+                sat = 0.92 + 0.08 * math.sin(timestamp + i)
+                val = 0.92 + 0.08 * amplitude
+                r, g, b = colorsys.hsv_to_rgb(hue, sat, val)
+                r = max(0, min(255, int(r * 255)))
+                g = max(0, min(255, int(g * 255)))
+                b = max(0, min(255, int(b * 255)))
+                color = f"#{r:02x}{g:02x}{b:02x}"
+                
+                # Draw with glow on beat
+                if is_beat and random.random() < 0.4:
+                    glow_size = 12  # Fixed glow size
+                    glow_r = max(0, min(255, r // 2))
+                    glow_g = max(0, min(255, g // 2))
+                    glow_b = max(0, min(255, b // 2))
+                    self.canvas.create_text(
+                        x, y,
+                        text=symbol,
+                        fill=f"#{glow_r:02x}{glow_g:02x}{glow_b:02x}",
+                        font=("Arial", glow_size),
+                        anchor="center"
+                    )
+                
                 self.canvas.create_text(
                     x, y,
                     text=symbol,
-                    fill=f"#{r//2:02x}{g//2:02x}{b//2:02x}",
+                    fill=color,
+                    font=("Arial", size),
+                    anchor="center"
+                )
+        
+        # Add colorful kaomoji - dense but staggered layout
+        # Create a grid-like pattern with randomness for "dense but orderly" effect
+        cell_size_x = 60  # Horizontal spacing
+        cell_size_y = 50  # Vertical spacing
+        grid_cols = (width // cell_size_x) + 1
+        grid_rows = (height // cell_size_y) + 1
+        
+        # Calculate how many kaomoji to show based on audio
+        show_percentage = 0.4 + (amplitude * 0.4)  # 40% to 80% of grid filled
+        if is_beat:
+            show_percentage = min(0.9, show_percentage + 0.2)  # Up to 90% on beat
+        
+        for row in range(grid_rows):
+            for col in range(grid_cols):
+                # Random chance to show kaomoji in this cell
+                if random.random() > show_percentage:
+                    continue
+                
+                # Base position with random offset for "错落有致"
+                base_x = col * cell_size_x
+                base_y = row * cell_size_y
+                
+                # Add random offset within cell
+                offset_x = random.randint(-15, 15)
+                offset_y = random.randint(-15, 15)
+                
+                x = base_x + offset_x
+                y = base_y + offset_y
+                
+                # Keep within bounds
+                if x < 10 or x > width - 10 or y < 10 or y > height - 10:
+                    continue
+                
+                face = random.choice(kaomoji)
+                
+                # Varied sizes for depth - slightly bigger
+                size_variation = random.choice([14, 16, 18, 20])
+                face_size = size_variation
+                
+                # Very vibrant colors with variation
+                hue = (timestamp * 0.15 + col / grid_cols + row / grid_rows + random.random() * 0.1) % 1.0
+                sat = 0.85 + random.random() * 0.15
+                val = 0.85 + random.random() * 0.15
+                r, g, b = colorsys.hsv_to_rgb(hue, sat, val)
+                r = max(0, min(255, int(r * 255)))
+                g = max(0, min(255, int(g * 255)))
+                b = max(0, min(255, int(b * 255)))
+                face_color = f"#{r:02x}{g:02x}{b:02x}"
+                
+                self.canvas.create_text(
+                    x, y,
+                    text=face,
+                    fill=face_color,
+                    font=("Arial", face_size),
+                    anchor="center"
+                )
+        
+        # Add central pulsing effect - bigger and more prominent
+        if is_beat or amplitude > 0.4:
+            center_x = int(width / 2)
+            center_y = int(height / 2)
+            
+            # Show rotating colorful symbols in center
+            num_center_symbols = 5 if is_beat else 3
+            for i in range(num_center_symbols):
+                angle = (timestamp * 2 + i * (2 * math.pi / num_center_symbols)) % (2 * math.pi)
+                radius = 60 + 20 * math.sin(timestamp * 3)  # Not affected by amplitude
+                x = center_x + int(radius * math.cos(angle))
+                y = center_y + int(radius * math.sin(angle))
+                
+                symbol = random.choice(symbol_chars)
+                size = random.choice([16, 18, 20])  # Varied larger sizes
+                
+                hue = (timestamp * 0.3 + i / num_center_symbols) % 1.0
+                r, g, b = colorsys.hsv_to_rgb(hue, 0.95, 0.98)
+                r = max(0, min(255, int(r * 255)))
+                g = max(0, min(255, int(g * 255)))
+                b = max(0, min(255, int(b * 255)))
+                color = f"#{r:02x}{g:02x}{b:02x}"
+                
+                # Add glow effect
+                glow_size = 14  # Fixed glow size
+                glow_r = max(0, min(255, r // 3))
+                glow_g = max(0, min(255, g // 3))
+                glow_b = max(0, min(255, b // 3))
+                self.canvas.create_text(
+                    x, y,
+                    text=symbol,
+                    fill=f"#{glow_r:02x}{glow_g:02x}{glow_b:02x}",
                     font=("Arial", glow_size),
                     anchor="center"
                 )
-            
-            self.canvas.create_text(
-                x, y,
-                text=symbol,
-                fill=color,
-                font=("Arial", size),
-                anchor="center"
-            )
-        
-        # Add more kaomoji expressions all the time (not just on beats)
-        # Always show some baseline level of kaomoji
-        base_count = int(5 + amplitude * 3)  # Always show at least some faces
-        
-        # On beats, add even more kaomoji expressions in random positions
-        if is_beat or amplitude > 0.6:
-            beat_count = int(8 + amplitude * 12)  # Much more on beats
-        else:
-            beat_count = base_count
-            
-        for i in range(beat_count):
-            # More varied positioning across the screen
-            x = int(random.uniform(width * 0.05, width * 0.95))
-            y = int(random.uniform(height * 0.05, height * 0.95))
-            
-            face = random.choice(kaomoji)
-            face_size = int(14 + 10 * amplitude)  # Larger faces
-            
-            # Brighter, more varied colors
-            r = int(200 + 55 * math.sin(timestamp + i))
-            g = int(200 + 55 * math.sin(timestamp * 1.3 + i))
-            b = int(100 + 155 * math.sin(timestamp * 0.7 + i))
-            face_color = f"#{r:02x}{g:02x}{b:02x}"
-            
-            self.canvas.create_text(
-                x, y,
-                text=face,
-                fill=face_color,
-                font=("Arial", face_size),
+                
+                self.canvas.create_text(
+                    x, y,
+                    text=symbol,
+                    fill=color,
+                    font=("Arial", size),
                     anchor="center"
                 )
-        
-        # Add a central focal point that pulses with the amplitude
-        center_x = int(width / 2)
-        center_y = int(height / 2)
-        pulse_size = int(20 + amplitude * 60)
-        
-        # Draw concentric circles that pulse with the beat
-        for i in range(3):
-            circle_size = int(pulse_size * (0.5 + i * 0.25))
-            opacity = int(255 * (1.0 - i * 0.25) * (0.5 + amplitude * 0.5))
-            circle_color = f"#{opacity:02x}{opacity:02x}{opacity:02x}"
-            
-            self.canvas.create_oval(
-                int(center_x - circle_size/2), int(center_y - circle_size/2),
-                int(center_x + circle_size/2), int(center_y + circle_size/2),
-                outline=circle_color, width=2, fill=""
-            )
-        
-        # Draw a central character that changes with the audio
-        central_char = symbol_chars[int(len(symbol_chars) * centroid * 0.99)]
-        central_size = int(30 + 20 * amplitude)
-        
-        # Color based on audio features
-        hue = (timestamp * 0.1) % 1.0
-        r, g, b = [int(c * 255) for c in colorsys.hsv_to_rgb(hue, 0.8, 0.9)]
-        central_color = f"#{r:02x}{g:02x}{b:02x}"
-        
-        self.canvas.create_text(
-            int(center_x), int(center_y),
-            text=central_char,
-            fill=central_color,
-            font=("Arial", central_size),
-            anchor="center"
-        )
     
     def _draw_frequency_wave(self, width, height, features):
-        """Draw pure ASCII art animation visualization synchronized with audio"""
-        # Background - plain black background for better visibility of ASCII art
+        """Draw pure kaomoji art animation - no waveforms"""
+        # Background - plain black
         self.canvas.create_rectangle(0, 0, width, height, fill="#000000", outline="")
         
-        # Extract features
-        amplitude = features['rms'] * 8  # Higher amplitude for more dramatic effect
-        centroid = features.get('centroid', 2000) / 5000
-        is_beat = features.get('is_beat', False)
-        
-        # Only ASCII art animation - no waveforms at all
+        # Only kaomoji art animation
         self._draw_ascii_art_animation(width, height, features)
-        
-        # No waveform indicators or grid lines - completely removed
-        # All waveform drawing is removed to only show ASCII art and kaomoji
-        
-        # Optional beat indicators (subtle indicators at the edges of the screen)
-        if is_beat:
-            # Simple decorative indicators that don't involve waveforms
-            self.canvas.create_rectangle(0, 0, width, 3, fill="#ff9900", outline="")
-            self.canvas.create_rectangle(0, height-3, width, height, fill="#ff9900", outline="")
-        self._draw_level_meter(width, height, amplitude)
-
-
-        
-        # Add additional effects on beats
-        if is_beat:
-            # Create burst effect
-            burst_radius = min(width, height) * 0.4 * amplitude
-            burst_x = width / 2
-            burst_y = height / 2
-            
-            # Draw burst
-            for i in range(8):
-                angle = math.pi * 2 * i / 8
-                x1 = int(burst_x + math.cos(angle) * burst_radius * 0.3)
-                y1 = int(burst_y + math.sin(angle) * burst_radius * 0.3)
-                x2 = int(burst_x + math.cos(angle) * burst_radius)
-                y2 = int(burst_y + math.sin(angle) * burst_radius)
-                
-                # Color based on angle
-                hue = (self.color_offset + i / 8) % 1.0
-                r, g, b = [int(c * 255) for c in colorsys.hsv_to_rgb(hue, 0.9, 0.9)]
-                line_color = f"#{r:02x}{g:02x}{b:02x}"
-                
-                # Draw burst line
-                self.canvas.create_line(x1, y1, x2, y2, fill=line_color, width=3)
     
     def _draw_mixed_visualization(self, width, height, features):
-        """Combined visualization with elements from multiple styles"""
-        # Extract features
-        amplitude = features['rms'] * 3
-        is_beat = features['is_beat']
-        freq_data = features.get('frequency_data', [0.5] * 64)
-        
-        # Background with pixel grid (from pixel waves)
-        pixel_size = 20
-        grid_width = width // pixel_size + 1
-        grid_height = height // pixel_size + 1
-        
-        # Calculate grid cell colors based on frequency data
-        for x in range(grid_width):
-            for y in range(grid_height):
-                # Map grid position to frequency data
-                freq_idx = min(len(freq_data) - 1, int((x + y) % len(freq_data)))
-                freq_val = freq_data[freq_idx]
-                
-                # Create wave pattern
-                wave_val = math.sin(x * 0.2 + self.color_offset * 10) * math.cos(y * 0.1)
-                
-                # Generate color
-                hue = (self.color_offset + freq_val * 0.5) % 1.0
-                saturation = 0.7 + freq_val * 0.3
-                brightness = 0.1 + abs(wave_val) * 0.3 + freq_val * 0.3
-                
-                r, g, b = [int(c * 255) for c in colorsys.hsv_to_rgb(hue, saturation, brightness)]
-                cell_color = f"#{r:02x}{g:02x}{b:02x}"
-                
-                # Draw pixel
-                self.canvas.create_rectangle(
-                    x * pixel_size, 
-                    y * pixel_size, 
-                    (x+1) * pixel_size - 1, 
-                    (y+1) * pixel_size - 1,
-                    fill=cell_color, 
-                    outline=""
-                )
-        
-        # Add frequency wave overlay (simplified)
-        if len(freq_data) > 0:
-            # Calculate wave positions
-            wave_height = height * 0.5
-            wave_top = height * 0.25
-            x_step = width / (len(freq_data) - 1) if len(freq_data) > 1 else width
-            
-            # Draw the wave
-            points = []
-            for i, val in enumerate(freq_data):
-                # X position
-                x = i * x_step
-                
-                # Y position based on frequency amplitude
-                y = wave_top + wave_height * (1.0 - val * (0.5 + amplitude * 0.5))
-                
-                # Add to points list
-                points.append(int(x))
-                points.append(int(y))
-            
-            # Draw wave as a line
-            if len(points) >= 4:  # Need at least 2 points
-                self.canvas.create_line(points, fill="#ffffff", width=3, smooth=1)
-        
-        # Add fractal shapes (simplified from fractal tunnel)
-        if is_beat or random.random() > 0.9:
-            # Center coordinates
-            center_x = width / 2
-            center_y = height / 2
-            
-            # Create a new shape
-            sides = random.randint(3, 8)
-            size = 100 + amplitude * 150
-            angle = self.color_offset * math.pi * 2
-            hue = (self.color_offset + 0.2) % 1.0
-            
-            # Calculate vertices
-            vertices = []
-            for i in range(sides):
-                current_angle = angle + (2 * math.pi * i / sides)
-                x = int(center_x + size * math.cos(current_angle))
-                y = int(center_y + size * math.sin(current_angle))
-                vertices.append(x)
-                vertices.append(y)
-            
-            # Generate color
-            r, g, b = [int(c * 255) for c in colorsys.hsv_to_rgb(hue, 0.7, 0.8)]
-            outline_color = f"#{r:02x}{g:02x}{b:02x}"
-            
-            # Draw polygon
-            if len(vertices) >= 6:  # Need at least 3 points
-                self.canvas.create_polygon(vertices, fill="", outline=outline_color, width=3)
-        
-        # Add particles from audio particles visualization (simplified)
-        num_particles = int(10 + amplitude * 30)
-        for _ in range(num_particles):
-            # Random position within canvas
-            x = random.random() * width
-            y = random.random() * height
-            
-            # Map to nearest frequency data point
-            freq_idx = min(len(freq_data) - 1, int(x / width * len(freq_data)))
-            freq_val = freq_data[freq_idx] if freq_idx < len(freq_data) else 0.5
-            
-            # Size and color based on frequency and amplitude
-            size = 2 + int(freq_val * 8)
-            hue = (self.color_offset + freq_val) % 1.0
-            r, g, b = [int(c * 255) for c in colorsys.hsv_to_rgb(hue, 0.8, 0.9)]
-            particle_color = f"#{r:02x}{g:02x}{b:02x}"
-            
-            # Draw particle
-            self.canvas.create_oval(
-                x - size/2, y - size/2,
-                x + size/2, y + size/2,
-                fill=particle_color, outline=""
-            )
+        """Kaomoji art only"""
+        self._draw_ascii_art_animation(width, height, features)
     
     def stop(self):
         """Stop visualization"""

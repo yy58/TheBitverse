@@ -1,12 +1,18 @@
 # 🎮 The Bitverse - 8-Bit Chiptune Music Converter
 
-Transform your music into nostalgic 8-bit chiptune magic! The Bitverse lets you convert MP3 files into retro, pixelated audio and create your own chiptune melodies using an interactive keyboard synthesizer.
+Transform your music into nostalgic 8-bit chiptune magic! The Bitverse lets you convert MP3 files into retro, pixelated audio and create your own chiptune melodies using an interactive keyboard synthesizer, now with enhanced visual effects!
 
-![Version](https://img.shields.io/badge/version-1.0.0-green)
+![Version](https://img.shields.io/badge/version-2.0.0-green)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
 ## ✨ Features
+
+### 🌈 Enhanced Music Visualizations
+- **Dedicated Visualization Window**: Immersive full-screen capable visualizations that react to audio in real-time
+- **Multiple Visual Modes**: Choose between Pixel Waves, Fractal Tunnel, Audio Particles, and Spectrum Grid
+- **Dynamic Patterns**: Visuals that respond to audio features like pitch, rhythm, and frequency content
+- **Interactive Controls**: Switch visualization modes on the fly while music plays
 
 ### 🎵 MP3 to 8-Bit Converter
 - **Instant Conversion**: Upload any MP3, WAV, or audio file and watch it transform into a retro 8-bit masterpiece
@@ -18,6 +24,7 @@ Transform your music into nostalgic 8-bit chiptune magic! The Bitverse lets you 
 - **Real-time Playback**: 30+ keys mapped to musical notes across three octaves
 - **Multiple Waveforms**: Choose from Square (classic), Triangle (soft), or Pulse (sharp) waves
 - **Recording Capability**: Record your melodies and play them back
+- **Visual Feedback**: Enhanced visual effects that respond to your keyboard playing
 - **Export功能**: Save your compositions as WAV files
 - **Visual Keyboard Layout**: On-screen guide shows note mappings
 
@@ -26,6 +33,11 @@ Transform your music into nostalgic 8-bit chiptune magic! The Bitverse lets you 
 ### Prerequisites
 - Python 3.8 or higher
 - FFmpeg (required for audio file conversion)
+- Required Python packages (for enhanced visualizations):
+  - librosa
+  - numpy
+  - sounddevice
+  - matplotlib
 
 ### Step 1: Install FFmpeg
 
@@ -113,6 +125,22 @@ python chiptune_converter.py song.mp3
 python keyboard_synth.py
 ```
 
+### Enhanced Visualization
+
+The enhanced visualization system features multiple visualization modes that you can switch between:
+
+1. **Pixel Waves**: Colorful pixel-based patterns that respond to audio frequencies and amplitude
+2. **Fractal Tunnel**: Geometric patterns that expand and rotate in response to audio features
+3. **Audio Particles**: Dynamic particle system that bursts and flows with the rhythm and intensity of the music
+4. **Spectrum Grid**: Color-coded grid visualization showing frequency spectrum as patterns
+
+To access the enhanced visualization:
+- Use the "LAUNCH ENHANCED VISUALIZER" button in the converter tab
+- Click "SHOW ENHANCED VISUALIZER" in the keyboard tab when playing notes
+- Visualizations automatically appear in a separate window when playing converted audio
+
+**Note**: For the best visual experience, ensure your system meets the minimum requirements and has all dependencies installed.
+
 ## 🛠️ Technical Details
 
 ### Audio Processing Pipeline
@@ -121,6 +149,24 @@ python keyboard_synth.py
 2. **Downsampling**: Reduces sample rate (default: 22050 Hz)
 3. **Mono Conversion**: Converts stereo to mono for authentic chiptune feel
 4. **Bit Depth Quantization**: Reduces to 8-bit (256 levels) for retro sound
+
+### Audio Visualization System
+
+1. **Feature Extraction**: Uses librosa to analyze audio features in real-time:
+   - Spectral centroid (brightness of sound)
+   - Zero-crossing rate (noisiness/harshness)
+   - RMS amplitude (volume/energy)
+   - Onset detection (beats/rhythm)
+
+2. **Visualization Processing**:
+   - Real-time audio frame processing
+   - Feature mapping to visual parameters (color, size, position, etc.)
+   - Multiple rendering algorithms for different visual styles
+
+3. **Rendering**:
+   - Tkinter Canvas for graphics rendering
+   - Separate thread for visualization processing
+   - Synchronized with audio playback
 5. **Square Wave Processing**: Adds harmonic content typical of 8-bit systems
 6. **Envelope Shaping**: Applies ADSR envelope for natural note decay
 7. **Filtering**: High-pass filter removes sub-bass (hardware limitations simulation)
@@ -148,6 +194,23 @@ TheBitverse/
 ```
 
 ## 🎨 Customization
+
+### Use the custom font (Megamax Jonathan Too)
+
+To use the Megamax Jonathan Too font in the app and web demo, install it on your system:
+
+macOS:
+- Double-click the `.ttf` or `.otf` file and click "Install Font" in Font Book
+- Restart the app if it was running
+
+Windows:
+- Right-click the font file → Install for all users
+
+Linux:
+- Copy the font file to `~/.local/share/fonts` (user) or `/usr/local/share/fonts` (system)
+- Run `fc-cache -f -v`
+
+If the font isn't installed, the app will fall back to Courier New.
 
 ### Modify Conversion Settings
 

@@ -319,7 +319,7 @@ class ChiptuneApp:
             pady=10,
             wrap=tk.NONE
         )
-        self.visualization_display.insert(tk.END, "转换完成后，ASCII视觉效果将在此处显示...")
+        self.visualization_display.insert(tk.END, "ASCII visualization will appear here after conversion...")
         self.visualization_display.config(state=tk.DISABLED)
         self.visualization_display.pack(pady=10, fill='both', expand=True)
         
@@ -812,6 +812,13 @@ class ChiptuneApp:
             # Create enhanced visualizer in new window if not already created
             if self.visualizer is None or not hasattr(self.visualizer, 'root'):
                 self.visualizer = EnhancedVisualizer(title=f"TheBitverse - {os.path.basename(audio_path)}")
+                # Set visualization mode to ASCII art mode with kaomoji
+                self.visualizer.vis_mode = 2  # Force ASCII art visualization
+            else:
+                # Show window if it exists but is hidden
+                self.visualizer.show_window()
+                # Ensure visualization mode is set correctly
+                self.visualizer.vis_mode = 2  # Force ASCII art visualization
             
             # Play audio thread
             def play_audio():
@@ -945,11 +952,14 @@ class ChiptuneApp:
         """Show ASCII art visualizer for keyboard playing"""
         if self.visualizer is None or not hasattr(self.visualizer, 'root'):
             # Create visualizer with kaomoji animation instead of waveforms
-            self.visualizer = EnhancedVisualizer(title="TheBitverse - Kaomoji Visualizer 颜文字可视化", 
+            self.visualizer = EnhancedVisualizer(title="TheBitverse - Kaomoji Visualizer", 
                                                width=960, height=640)
             
             # Set visualization mode to ASCII art mode
             self.visualizer.vis_mode = 2  # Force ASCII art visualization
+        else:
+            # If visualizer exists but hidden, show it
+            self.visualizer.show_window()
 
     def on_key_release(self, event):
         """Handle key release: mark key as released (optional early stop can be added)."""
@@ -1179,6 +1189,13 @@ class ChiptuneApp:
             # Initialize visualizer if not exists
             if self.visualizer is None or not hasattr(self.visualizer, 'root'):
                 self.visualizer = EnhancedVisualizer(title="TheBitverse - Music Visualizer")
+                # Set visualization mode to ASCII art mode with kaomoji
+                self.visualizer.vis_mode = 2  # Force ASCII art visualization
+            else:
+                # Show window if it exists but is hidden
+                self.visualizer.show_window()
+                # Ensure visualization mode is set correctly
+                self.visualizer.vis_mode = 2  # Force ASCII art visualization
             
             # Generate a demo animation if no audio is playing
             import numpy as np

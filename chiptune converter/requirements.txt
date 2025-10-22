@@ -6,8 +6,16 @@ pydub>=0.25.1
 scipy>=1.9.0
 numpy>=1.24.0
 
+# Audio analysis and features
+librosa>=0.9.1
+
 # Audio playback
 pyaudio>=0.2.13
+sounddevice>=0.4.1
+
+# UI enhancements
+matplotlib>=3.5.0
+tk>=0.1.0
 
 # File handling (for pydub)
 # Note: You'll also need ffmpeg installed on your system

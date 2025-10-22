@@ -8,6 +8,9 @@ from pydub import AudioSegment
 from pydub.effects import compress_dynamic_range
 from scipy import signal
 import os
+# Added audio feature analysis dependencies
+import librosa
+import librosa.display
 
 
 class ChiptuneConverter:
@@ -175,6 +178,188 @@ class ChiptuneConverter:
         audio.export(output_path, format=format)
         print("Conversion complete!")
     
+    def analyze_features(self, audio_path):
+        """
+        Analyze audio file and extract key features
+        """
+        import librosa
+        
+        # Load the audio file
+        y, sr = librosa.load(audio_path, sr=None, mono=True)
+        
+        # Extract key features
+        # Pitch information (using piptrack to estimate overall pitch)
+        pitches, magnitudes = librosa.piptrack(y=y, sr=sr)
+        avg_pitch = 0
+        if pitches.any():
+            avg_pitch = np.mean([
+                pitch[mag == mag.max()]
+                for pitch, mag in zip(pitches, magnitudes)
+                if mag.any()
+            ])
+        
+        # Tempo estimation
+        tempo = 120  # Default value
+        if hasattr(librosa.beat, 'tempo'):  # Check for new API
+            tempo = librosa.beat.tempo(y=y, sr=sr)[0]
+        
+        # Spectral centroid (brightness)
+        spectral_centroids = librosa.feature.spectral_centroid(y=y, sr=sr)[0]
+        avg_centroid = np.mean(spectral_centroids)
+        
+        # Zero-crossing rate (noisiness/harshness)
+        zcr = librosa.feature.zero_crossing_rate(y)[0]
+        avg_zcr = np.mean(zcr)
+        
+        print(f"Audio analysis complete: pitch={avg_pitch:.2f}, tempo={tempo:.2f}, centroid={avg_centroid:.2f}")
+        
+        return {
+            'avg_pitch': avg_pitch,
+            'tempo': tempo,
+            'avg_centroid': avg_centroid,
+            'avg_zcr': avg_zcr
+        }
+        
+    def analyze_frame_features(self, frame, sr):
+        """
+        Analyze a single audio frame for real-time visualization
+        
+        Args:
+            frame: Audio samples
+            sr: Sample rate
+            
+        Returns:
+            Dictionary of audio features
+        """
+        import librosa
+        import numpy as np
+        
+        try:
+            # Pitch information (simplified for speed)
+            pitches, magnitudes = librosa.piptrack(y=frame, sr=sr)
+            avg_pitch = 0
+            if pitches.any() and magnitudes.any():
+                avg_pitch = np.mean(pitches[magnitudes > magnitudes.mean()])
+                if np.isnan(avg_pitch):
+                    avg_pitch = 200  # Default value
+            else:
+                avg_pitch = 200  # Default value
+            
+            # Tempo (simplified)
+            tempo = 120  # Default value
+            
+            # Spectral centroid
+            spectral_centroids = librosa.feature.spectral_centroid(y=frame, sr=sr)[0]
+            avg_centroid = np.mean(spectral_centroids) if len(spectral_centroids) > 0 else 2000
+            
+            # Zero-crossing rate
+            zcr = librosa.feature.zero_crossing_rate(frame)[0]
+            avg_zcr = np.mean(zcr) if len(zcr) > 0 else 0.1
+            
+            return {
+                'avg_pitch': avg_pitch,
+                'tempo': tempo,
+                'avg_centroid': avg_centroid,
+                'avg_zcr': avg_zcr
+            }
+            
+        except Exception as e:
+            print(f"Frame analysis error: {e}")
+            # Return default values
+            return {
+                'avg_pitch': 200,
+                'tempo': 120,
+                'avg_centroid': 2000,
+                'avg_zcr': 0.1
+            }
+
+    def features_to_ascii_art(self, features, width=40, height=16):
+        """
+        Create pixel-style ASCII art based on audio features
+        Pitch → character type, Spectral Centroid → brightness,
+        Zero-Crossing Rate → edges/jitter, Tempo → horizontal block rhythm
+        """
+        import random
+        import math
+        
+        # Get features
+        pitch = features['avg_pitch']
+        tempo = features['tempo']
+        centroid = features['avg_centroid']
+        zcr = features['avg_zcr']
+        
+        # Enhanced character set for more visual variety
+        chars = [' ', '.', '·', ':', '*', '+', '=', '#', '%', '@', '█', '▓', '▒', '░']
+        
+        # Pitch to character mapping (expanded range)
+        pitch_index = min(len(chars)-1, max(0, int(pitch / 100)))
+        main_char = chars[pitch_index]
+        
+        # Secondary character based on centroid (brightness)
+        cent_index = min(len(chars)-1, max(0, int(centroid / 500)))
+        bright_char = chars[cent_index]
+        
+        # Edge character based on zero-crossing rate
+        edge_index = min(len(chars)-2, max(0, int(zcr * 50)))
+        edge_char = chars[edge_index + 2]  # Offset for visibility
+        
+        # Pattern variety based on tempo
+        block_size = max(3, int(60/tempo * 2)) if tempo > 0 else 6
+        
+        # Generate more interesting patterns
+        art = []
+        for y in range(height):
+            row = ''
+            for x in range(width):
+                # Base pattern selection
+                pattern_val = (x % block_size) + (y % block_size)
+                
+                # Wave pattern overlay
+                wave_val = math.sin(x * 0.2 + y * 0.1) * math.cos(y * 0.1 + x * 0.05)
+                
+                # Character selection logic with more interesting patterns
+                if pattern_val <= block_size // 2:
+                    # Main pattern
+                    if wave_val > 0.3:
+                        c = main_char
+                    else:
+                        c = bright_char
+                else:
+                    # Secondary pattern
+                    if (x + y) % block_size == 0:
+                        c = edge_char
+                    elif wave_val < -0.3:
+                        c = chars[min(len(chars)-1, abs(pitch_index - cent_index))]
+                    else:
+                        c = chars[min(len(chars)-1, abs(pitch_index + cent_index) % len(chars))]
+                
+                # Add occasional random pixels for texture
+                if random.random() < 0.01 * zcr * 10:
+                    c = random.choice(chars[8:])
+                
+                # Add to row
+                row += c
+            art.append(row)
+        
+        # Add a decorative border
+        bordered_art = []
+        border_top = '╔' + '═' * width + '╗'
+        border_bottom = '╚' + '═' * width + '╝'
+        bordered_art.append(border_top)
+        
+        for line in art:
+            bordered_art.append('║' + line + '║')
+        
+        bordered_art.append(border_bottom)
+        
+        # Add a title
+        title = " TheBitverse - 8-bit Chiptune "
+        title_pos = max(0, (width - len(title)) // 2)
+        if title_pos > 0:
+            bordered_art[0] = '╔' + '═' * title_pos + title + '═' * (width - title_pos - len(title)) + '╗'
+        
+        return '\n'.join(bordered_art)
+
     def convert_file(self, input_path, output_path=None):
         """
         Complete conversion pipeline
@@ -188,21 +373,27 @@ class ChiptuneConverter:
         """
         # Load audio
         audio = self.load_audio(input_path)
-        
         # Convert to 8-bit
         audio = self.convert_to_8bit(audio)
-        
         # Add retro effects
         audio = self.add_retro_effects(audio)
-        
-        # Generate output path if not provided
+        # Generate output path
         if output_path is None:
             base, ext = os.path.splitext(input_path)
             output_path = f"{base}_8bit_chiptune.mp3"
-        
-        # Save
+        # Save audio
         self.save_audio(audio, output_path)
-        
+        # Analyze audio features
+        features = self.analyze_features(input_path)
+        print("音频特征分析结果：")
+        for k, v in features.items():
+            print(f"  {k}: {v}")
+        # 生成ASCII像素画
+        ascii_art = self.features_to_ascii_art(features)
+        cover_path = os.path.splitext(output_path)[0] + '_cover.txt'
+        with open(cover_path, 'w', encoding='utf-8') as f:
+            f.write(ascii_art)
+        print(f"已生成像素风格ASCII封面: {cover_path}")
         return output_path
 
 

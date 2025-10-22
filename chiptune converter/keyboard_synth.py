@@ -7,8 +7,16 @@ import numpy as np
 import pyaudio
 import threading
 import time
+import math
 from collections import deque
 from scipy import signal
+import os
+try:
+    import mido
+    MIDI_AVAILABLE = True
+except ImportError:
+    MIDI_AVAILABLE = False
+    print("Warning: mido library not found. MIDI export will be disabled.")
 
 
 class ChiptuneKeyboard:
@@ -304,6 +312,152 @@ class ChiptuneKeyboard:
         wavfile.write(filename, self.sample_rate, audio_buffer)
         
         print(f"✓ Exported to {filename}")
+        
+    def export_recording_to_midi(self, filename, recording=None):
+        """
+        Export recording to MIDI file
+        
+        Args:
+            filename: Output filename
+            recording: List of note dictionaries (uses self.recording if None)
+        """
+        if not MIDI_AVAILABLE:
+            print("Error: MIDI export requires the 'mido' library. Install with 'pip install mido'")
+            return False
+        
+        try:
+            if recording is None:
+                recording = self.recording
+            
+            if not recording:
+                print("No recording to export.")
+                return False
+            
+            print(f"Exporting recording to MIDI: {filename}...")
+            
+            # Create a new MIDI file
+            mid = mido.MidiFile()
+            track = mido.MidiTrack()
+            mid.tracks.append(track)
+            
+            # Set tempo (120 BPM)
+            tempo = mido.bpm2tempo(120)
+            track.append(mido.MetaMessage('set_tempo', tempo=tempo, time=0))
+            
+            # Set instrument (80 = Square Lead for 8-bit sound)
+            track.append(mido.Message('program_change', program=80, time=0))
+            
+            # Calculate start time
+            start_time = recording[0]['timestamp']
+            
+            # Convert note frequencies to MIDI note numbers
+            # MIDI note numbers: 60 = middle C (C4, 261.63 Hz)
+            def freq_to_midi_note(freq):
+                return int(round(12 * math.log2(freq / 440.0) + 69))
+            
+            # Add notes to track
+            last_time = 0
+            for i, note in enumerate(recording):
+                # Calculate MIDI note number from frequency
+                midi_note = freq_to_midi_note(note['frequency'])
+                
+                # Calculate time in MIDI ticks (480 ticks per beat)
+                relative_time = note['timestamp'] - start_time
+                ticks = int(relative_time * 480 * 2)  # 480 ticks per quarter note * 2 for flexibility
+                delta_time = ticks - last_time
+                
+                # Note on
+                track.append(mido.Message('note_on', note=midi_note, velocity=100, time=max(0, delta_time)))
+                
+                # Calculate note duration in ticks
+                duration_ticks = int(note['duration'] * 480 * 2)  # Convert seconds to ticks
+                
+                # Note off (after duration)
+                track.append(mido.Message('note_off', note=midi_note, velocity=0, time=duration_ticks))
+                
+                # Update last time
+                last_time = ticks + duration_ticks
+            
+            # Save the MIDI file
+            mid.save(filename)
+            print(f"✓ Exported to MIDI: {filename}")
+            return True
+            
+        except Exception as e:
+            print(f"Error exporting MIDI: {str(e)}")
+            return False
+    
+    def start_loop_recording(self):
+        """Start a looping recording session"""
+        self.loop_recording = []
+        self.is_loop_recording = True
+        self.loop_start_time = time.time()
+        print("🔄 Loop recording started...")
+        
+    def stop_loop_recording(self, loop_duration=4.0):
+        """
+        Stop loop recording and prepare it for looping
+        
+        Args:
+            loop_duration: Duration of the loop in seconds
+        """
+        self.is_loop_recording = False
+        loop_end_time = self.loop_start_time + loop_duration
+        
+        # Filter notes that fit within the loop duration
+        self.loop_recording = [
+            note for note in self.recording 
+            if note['timestamp'] >= self.loop_start_time and 
+               note['timestamp'] < loop_end_time
+        ]
+        
+        print(f"⏹️  Loop recording stopped. Captured {len(self.loop_recording)} notes in {loop_duration:.1f}s loop.")
+        return self.loop_recording
+    
+    def play_loop(self, times=4):
+        """
+        Play the recorded loop multiple times
+        
+        Args:
+            times: Number of times to repeat the loop
+        """
+        if not hasattr(self, 'loop_recording') or not self.loop_recording:
+            print("No loop recording to play.")
+            return
+        
+        print(f"🔁 Playing loop {times} times...")
+        
+        # Calculate loop duration
+        start_time = self.loop_recording[0]['timestamp']
+        end_time = max(note['timestamp'] + note['duration'] for note in self.loop_recording)
+        loop_duration = end_time - start_time
+        
+        # Play the loop multiple times
+        for i in range(times):
+            print(f"Loop {i+1}/{times}")
+            
+            # Create a time-shifted copy of the loop
+            offset = i * loop_duration
+            current_time = time.time()
+            
+            for note in self.loop_recording:
+                # Calculate when to play this note
+                note_time = note['timestamp'] - start_time
+                play_time = current_time + note_time
+                
+                # Wait until it's time to play
+                sleep_time = max(0, play_time - time.time())
+                if sleep_time > 0:
+                    time.sleep(sleep_time)
+                
+                # Play the note
+                self.play_note(
+                    note['frequency'],
+                    note['duration'],
+                    note['wave_type']
+                )
+        
+        print("✓ Loop playback complete!")
     
     def close(self):
         """Clean up resources"""
