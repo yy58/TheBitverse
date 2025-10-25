@@ -8,7 +8,7 @@ A creative chiptune music converter and visualizer with real-time kaomoji animat
 
 ## Features
 
-### � MP3 to 8-bit Chiptune Converter
+###  MP3 to 8-bit Chiptune Converter
 - Convert any MP3 file to authentic 8-bit chiptune music
 - Three sample rate options:
   - **11025 Hz** - Game Boy DMG style (lo-fi)
@@ -16,7 +16,7 @@ A creative chiptune music converter and visualizer with real-time kaomoji animat
   - **44100 Hz** - SNES/PS1 style (high quality)
 - Authentic 8-bit audio processing with extreme mechanical character
 
-### � Voice to 8-bit Converter (NEW!)
+###  Voice to 8-bit Converter (NEW!)
 - **Real-time Voice Recording**: Record your voice directly through microphone
 - **Playback Original**: Listen to your raw recording before conversion
 - **8-bit Voice Conversion**: Transform your voice into robotic 8-bit audio
@@ -60,7 +60,6 @@ A creative chiptune music converter and visualizer with real-time kaomoji animat
 - Export recordings as WAV files
 - Enhanced visualizer window option
 
-## 🚀 Installation
 
 ## 🚀 Installation
 
@@ -317,33 +316,5 @@ ffmpeg -version
 - Audio processing done in separate thread to avoid UI blocking
 - Voice recording quality depends on microphone hardware
 
-## 📝 License
-
-This project is created for educational purposes as part of SD5913 Creative Programming course assignment at PolyU.
-
-## 🤝 Contributing
-
-This is an academic project, but suggestions and feedback are welcome!
-
-## 👨‍💻 Credits
-- **Developer**: yy58
-- **Course**: SD5913 Creative Programming
-- **Institution**: PolyU
-- **Year**: 2025
-
-## 🎮 Acknowledgments
-
-- Inspired by classic 8-bit game consoles (Game Boy, NES, Commodore 64)
-- Built with Python audio processing libraries
-- Special thanks to the chiptune and retro gaming communities
-
----
 
 **Enjoy creating retro chiptune music and robotic voice effects! 🎮🎵🤖✨**
-- [Pydub Documentation](https://github.com/jiaaro/pydub)
-- [SciPy Signal Processing](https://docs.scipy.org/doc/scipy/reference/signal.html)
-
----
-
-
-🎮 *Press START to continue...* 🎮
