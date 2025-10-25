@@ -42,104 +42,74 @@ class ChiptuneConverter:
     
     def convert_to_8bit(self, audio):
         """
-        Convert audio to crisp, classic 8-bit chiptune style (Mario/NES)
+        Convert audio to hybrid 8-bit chiptune style
+        Blend of soft triangle wave melody with retro mechanical character
         """
-        print("Converting to crisp 8-bit chiptune style...")
-        # Mono
+        print("Converting to hybrid 8-bit chiptune style...")
+        
+        # Step 1: Convert to mono for authentic chiptune
         audio = audio.set_channels(1)
-        # Downsample
+        
+        # Step 2: Downsample to target rate
         audio = audio.set_frame_rate(self.sample_rate)
-        # Get samples
+        
+        # Step 3: Get samples as numpy array
         samples = np.array(audio.get_array_of_samples()).astype(np.float32)
+        
+        # Step 4: Normalize with balanced headroom
         max_val = np.abs(samples).max()
         if max_val > 0:
-            samples = samples / max_val
-        # Bitcrush (less aggressive)
-        bit_depth_levels = 2 ** self.bit_depth
-        samples = np.round(samples * (bit_depth_levels / 2)) / (bit_depth_levels / 2)
-        # Pure square wave (no distortion, no vibrato)
-        samples = np.sign(samples)
-        # Normalize
-        if np.abs(samples).max() > 0:
-            samples = samples / np.abs(samples).max() * 0.9
+            samples = samples / max_val * 0.68  # Balanced volume
+        
+        # Step 5: EXTREME bit depth for maximum robotic crunch (6-bit!)
+        # Ultra-harsh quantization for strong mechanical voice
+        bit_depth_levels = 2 ** 6  # Only 64 levels - very crushed!
+        samples = np.round(samples * (bit_depth_levels / 2 - 1)) / (bit_depth_levels / 2 - 1)
+        
+        # Step 6: Very aggressive wave shaping for harsh mechanical edge
+        samples = np.tanh(samples * 3.5) * 0.98
+        
+        # Step 7: MAXIMUM mechanical character - dominant pulse wave
+        # Heavy pulse component for strong robotic voice effect
+        triangle_mix = 0.20  # Only 20% smooth triangle
+        pulse_mix = 0.45     # 45% mechanical pulse - dominant!
+        
+        triangle_wave = samples  # Smooth base
+        pulse_wave = np.sign(samples) * 0.88  # Very strong mechanical accent
+        
+        samples = (samples * (1 - triangle_mix - pulse_mix) + 
+                   triangle_wave * triangle_mix + 
+                   pulse_wave * pulse_mix)
+        
+        # Step 8: Maximum vibrato for prominent robotic wobble
+        vibrato_freq = 6.5  # Hz (much faster)
+        vibrato_depth = 0.020  # Very pronounced
+        t = np.arange(len(samples)) / self.sample_rate
+        vibrato = 1 + vibrato_depth * np.sin(2 * np.pi * vibrato_freq * t)
+        samples = samples * vibrato
+        
+        # Step 9: Very strong PWM for dominant mechanical buzz/robot voice
+        pwm_freq = 6  # Hz (faster)
+        pwm_amount = 0.15  # Very strong for extreme robotic character
+        pwm = 1 + pwm_amount * np.sin(2 * np.pi * pwm_freq * t)
+        samples = samples * pwm
+        
+        # Step 10: Convert back to audio
         samples_int = (samples * 32767).astype(np.int16)
         audio = audio._spawn(samples_int.tobytes())
-        # Gentle compression
-        audio = compress_dynamic_range(audio, threshold=-18.0, ratio=2.0)
+        
+        # Step 11: Aggressive compression for mechanical consistency
+        audio = compress_dynamic_range(audio, threshold=-20.0, ratio=4.0)
+        
+        # Step 12: Slight volume reduction
+        audio = audio - 2  # Reduce by 2dB
+        
         return audio
-    
-    def apply_square_wave_distortion(self, samples, intensity=0.6):
-        """
-        Apply aggressive square wave distortion for authentic chiptune sound
-        
-        Args:
-            samples: Normalized audio samples (-1 to 1)
-            intensity: How much distortion to apply (0-1)
-            
-        Returns:
-            Distorted samples
-        """
-        # Create square wave by using sign function
-        square = np.sign(samples)
-        
-        # Mix original with square wave for authentic chiptune character
-        distorted = (1 - intensity) * samples + intensity * square
-        
-        # Add harmonic distortion
-        distorted = np.tanh(distorted * 2.0) * 0.8
-        
-        return distorted
-    
-    def apply_pwm_effect(self, samples, rate=0.1):
-        """
-        Apply pulse width modulation effect
-        
-        Args:
-            samples: Audio samples
-            rate: Modulation rate
-            
-        Returns:
-            Modulated samples
-        """
-        # Create subtle PWM effect
-        length = len(samples)
-        t = np.arange(length) / self.sample_rate
-        pwm = 0.5 + 0.3 * np.sin(2 * np.pi * rate * t)
-        
-        # Apply threshold based on PWM
-        output = np.where(samples > 0, 
-                         np.where(np.abs(samples) > pwm, samples, samples * 0.5),
-                         np.where(np.abs(samples) > pwm, samples, samples * 0.5))
-        
-        return output
-    
-    def apply_vibrato(self, samples, rate=5.0, depth=0.003):
-        """
-        Apply vibrato effect (pitch modulation)
-        
-        Args:
-            samples: Audio samples
-            rate: Vibrato rate in Hz
-            depth: Vibrato depth (0-1)
-            
-        Returns:
-            Samples with vibrato
-        """
-        length = len(samples)
-        t = np.arange(length) / self.sample_rate
-        
-        # Create vibrato modulation
-        vibrato = depth * self.sample_rate * np.sin(2 * np.pi * rate * t)
-        
-        # Apply vibrato by modulating sample positions
-        indices = np.arange(length) + vibrato
-        indices = np.clip(indices, 0, length - 1).astype(int)
-        
-        return samples[indices]
     
     def add_retro_effects(self, audio):
         """
-        Add additional retro effects for authentic 8-bit sound
+        Add aggressive retro effects for maximum mechanical character
+        Harsh filtering and subtle echo for extreme 8-bit robot voice
         
         Args:
             audio: AudioSegment object
@@ -147,23 +117,48 @@ class ChiptuneConverter:
         Returns:
             Modified AudioSegment
         """
-        # High-pass filter to remove deep bass (simulates hardware limitations)
-        audio = audio.high_pass_filter(200)
+        # Higher high-pass for more mechanical "tinny" sound
+        audio = audio.high_pass_filter(120)
         
-        # Low-pass filter to remove high frequencies (authentic to 8-bit systems)
-        audio = audio.low_pass_filter(8000)
+        # Harsh low-pass filtering for extreme mechanical character
+        # Very limited frequency range for robot voice effect
+        if self.sample_rate <= 11025:
+            # For 11kHz, harsh cut at 2.5kHz (extreme Game Boy DMG)
+            audio = audio.low_pass_filter(2500)
+            # Strong mid boost for mechanical presence
+            audio = audio + 4
+        elif self.sample_rate <= 22050:
+            # For 22kHz, harsh cut at ~4kHz (extreme NES style)
+            audio = audio.low_pass_filter(4000)
+            audio = audio + 3
+        else:
+            # For 44kHz, limited cut at ~6kHz (mechanical but clear)
+            audio = audio.low_pass_filter(6000)
+            audio = audio + 2
         
-        # Boost mid-range frequencies (typical of chiptune)
-        audio = audio + 3
+        # Add subtle mid-range character for presence
+        # Light boost for retro speaker simulation
+        mid_boost = audio.high_pass_filter(600).low_pass_filter(3500)
+        audio = audio.overlay(mid_boost - 12)  # Very subtle blend
         
-        # Add a tiny bit of noise for analog feel (optional)
-        samples = np.array(audio.get_array_of_samples()).astype(np.float32)
-        noise = np.random.normal(0, 10, len(samples))
-        samples = samples + noise
-        samples = np.clip(samples, -32768, 32767).astype(np.int16)
-        audio = audio._spawn(samples.tobytes())
+        # Subtle delay/echo - present but quieter background
+        # Create softer echo repeats that don't overpower main voice
+        delay_time = 140  # milliseconds (balanced timing)
+        decay_factor = 0.65  # Much stronger decay (echoes quieter)
         
-        return audio
+        # First echo (quieter)
+        echo1 = audio - (20 * decay_factor)  # ~13dB quieter
+        combined = audio.overlay(echo1, position=delay_time)
+        
+        # Second echo (very soft)
+        echo2 = audio - (20 * decay_factor * 2.0)  # ~26dB quieter
+        combined = combined.overlay(echo2, position=delay_time * 2)
+        
+        # Third echo (barely audible, for subtle depth)
+        echo3 = audio - (20 * decay_factor * 3.5)  # ~45dB quieter
+        combined = combined.overlay(echo3, position=delay_time * 3)
+        
+        return combined
     
     def save_audio(self, audio, output_path, format="mp3"):
         """

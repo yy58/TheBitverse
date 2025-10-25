@@ -1,315 +1,292 @@
-# TheBitverse - 8-Bit Music & Game Universe# 🎮 The Bitverse - 8-Bit Chiptune Music Converter
+# TheBitverse 🎮🎵
 
+A creative chiptune music converter and visualizer with real-time kaomoji animations, interactive keyboard synthesis, and voice-to-8bit conversion.
 
+## Features
 
-## Project OverviewTransform your music into nostalgic 8-bit chiptune magic! The Bitverse lets you convert MP3 files into retro, pixelated audio and create your own chiptune melodies using an interactive keyboard synthesizer.
+### 🎵 MP3 to 8-bit Chiptune Converter
+- Convert any MP3 file to authentic 8-bit chiptune music
+- Three sample rate options:
+  - **11025 Hz** - Game Boy DMG style (lo-fi)
+  - **22050 Hz** - NES/Game Boy Color style (balanced)
+  - **44100 Hz** - SNES/PS1 style (high quality)
+- Authentic 8-bit audio processing with extreme mechanical character
 
-TheBitverse is a creative programming project that celebrates the nostalgic world of 8-bit chiptune music and retro-style games. This web application provides tools for converting modern music to 8-bit chiptune format, an online keyboard synthesizer, and a collection of browser-based retro-inspired games.
+### 🎤 Voice to 8-bit Converter (NEW!)
+- **Real-time Voice Recording**: Record your voice directly through microphone
+- **Playback Original**: Listen to your raw recording before conversion
+- **8-bit Voice Conversion**: Transform your voice into robotic 8-bit audio
+- **Sample Rate Selection**: Choose between 11025 Hz, 22050 Hz, or 44100 Hz
+- **Export Functionality**: Save converted audio as MP3 file
+- **Perfect for**: Voice effects, game audio, creative sound design
 
-![Version](https://img.shields.io/badge/version-1.0.0-green)
+### 🎨 Real-time Music Visualization
+- **Kaomoji Animation Layer**: Expressive emoji faces in grid formation with music-reactive jitter
+- **Music Symbol Layer**: Dynamic geometric patterns formed by music notes (♪♫♬♩✧)
+- **12 Different Pattern Types**:
+  
+  **Complex Patterns (Triggered by high pitch/pitch jumps):**
+  - Spiral 🌀
+  - Double Spiral 🧬
+  - 8-Point Star ⭐
+  - Flower Petals 🌸
+  - Lissajous Curves 🎵
+  - Heart Shape ❤️
+  - Infinity Symbol ∞
+  - Mandala Pattern 🕉️
 
-## Features![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+  **Simple Patterns (Triggered by beats):**
+  - Concentric Circles ⭕
+  - Square Grid ⬜
+  - Triangle 🔺
+  - Hexagon ⬡
 
-![License](https://img.shields.io/badge/license-MIT-orange)
-
-### Chiptune Converter
-
-- **Desktop Application**: Convert MP3 files to 8-bit chiptune format (Available for download)## ✨ Features
-
-- **Online Keyboard Synthesizer**: Create 8-bit music directly in your browser
-
-- **Sound Customization**: Adjust waveforms, envelopes, and effects to create your unique 8-bit sound### 🎵 MP3 to 8-Bit Converter
-
-- **Instant Conversion**: Upload any MP3, WAV, or audio file and watch it transform into a retro 8-bit masterpiece
-
-### Retro Games- **Authentic Sound**: Uses square wave synthesis, bit-depth reduction, and sample rate downsampling for genuine chiptune character
-
-- **Space Invaders**: Classic arcade shooting game- **Customizable Settings**: Adjust sample rates (11025Hz to 44100Hz) for different levels of "retro-ness"
-
-- **Pixel Runner**: Endless runner with retro graphics - **Multiple Effects**: Automatic envelope shaping, dynamic range compression, and high-pass filtering
-
-- **Bit Puzzler**: Brain-teasing puzzle game
+- **Smart Trigger System**:
+  - High pitch detection (>3000 Hz)
+  - Pitch jump detection (>800 Hz change)
+  - Strong beat detection
+  - Automatic pattern selection based on music characteristics
 
 ### 🎹 Interactive Keyboard Synthesizer
+- Live keyboard piano with ASCII art display
+- Two octaves (C3-A5) mapped to QWERTY keys
+- Real-time waveform visualization
+- Recording and playback functionality
+- Export recordings as WAV files
+- Enhanced visualizer window option
 
-## Technologies Used- **Real-time Playback**: 30+ keys mapped to musical notes across three octaves
+## Installation
 
-- HTML5, CSS3, JavaScript- **Multiple Waveforms**: Choose from Square (classic), Triangle (soft), or Pulse (sharp) waves
-
-- Web Audio API for sound synthesis- **Recording Capability**: Record your melodies and play them back
-
-- Python/Tkinter for the desktop chiptune converter application- **Export功能**: Save your compositions as WAV files
-
-- CSS animations for pixel art effects- **Visual Keyboard Layout**: On-screen guide shows note mappings
-
-
-
-## Installation & Setup## 🚀 Installation
-
-
-
-### Web Application### Prerequisites
-
-1. Clone the repository- Python 3.8 or higher
-
-```- FFmpeg (required for audio file conversion)
-
-git clone https://github.com/yourusername/thebitverse.git
-
-```### Step 1: Install FFmpeg
-
-2. Open `index.html` in a modern web browser
-
-**macOS:**
-
-### Chiptune Converter Desktop App```bash
-
-1. Navigate to the "chiptune converter" directorybrew install ffmpeg
-
-2. Install required Python packages:```
-
-```
-
-pip install -r requirements.txt**Linux (Ubuntu/Debian):**
-
-``````bash
-
-3. Run the application:sudo apt-get update
-
-```sudo apt-get install ffmpeg
-
-python gui_app.py```
-
-```
-
-**Windows:**
-
-## Project StructureDownload from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH
-
-```
-
-TheBitverse/### Step 2: Clone the Repository
-
-├── index.html              # Main web application page```bash
-
-├── style.css               # CSS stylesgit clone https://github.com/yy58/TheBitverse.git
-
-├── script.js               # Core JavaScript functionalitycd TheBitverse
-
-├── chiptune-synth.html     # Online synthesizer page```
-
-├── download.html           # Desktop app download page
-
-├── chiptune converter/     # Desktop application folder### Step 3: Install Python Dependencies
-
-│   ├── gui_app.py          # Main application file```bash
-
-│   └── audio_processor.py  # Audio processing logicpip install -r requirements.txt
-
-└── README.md               # Project documentation```
-
-```
-
-**Note for macOS users with M1/M2 chips:**
-
-## DevelopmentIf you encounter issues with PyAudio, try:
-
-This project was created as part of the SD5913 Creative Programming course at PolyU, combining technical skills with artistic expression.```bash
-
-brew install portaudio
-
-## Licensepip install pyaudio
-
-This project is licensed under the MIT License - see the LICENSE file for details.```
-
-
-
-## Acknowledgments## 🎮 Usage
-
-- Classic 8-bit game developers for inspiration
-
-- Open source audio libraries that make sound processing possible### Graphical User Interface (Recommended)
-
-- PolyU SD5913 course instructors for guidance
-Launch the GUI application:
+### Prerequisites
 ```bash
+# Python 3.7 or higher
+python --version
+
+# FFmpeg (required for audio processing)
+# macOS
+brew install ffmpeg
+
+# Ubuntu/Debian
+sudo apt-get install ffmpeg
+
+# Windows
+# Download from https://ffmpeg.org/download.html
+```
+
+### Setup
+```bash
+# Clone the repository
+git clone https://github.com/yy58/TheBitverse.git
+cd TheBitverse
+
+# Create virtual environment
+python -m venv .venv
+
+# Activate virtual environment
+# macOS/Linux:
+source .venv/bin/activate
+# Windows:
+.venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Dependencies
+- `pydub` - Audio processing
+- `librosa` - Music analysis and feature extraction
+- `numpy` - Numerical computations
+- `pygame` - Audio playback
+- `sounddevice` - Microphone recording
+- `scipy` - WAV file operations
+- `tkinter` - GUI (usually included with Python)
+
+## Usage
+
+### Launch the Application
+```bash
+cd "chiptune converter"
 python gui_app.py
 ```
 
-#### MP3 Converter Tab:
-1. Click **"📁 Browse MP3 File"** to select your audio file
-2. Choose your preferred sample rate (lower = more retro)
-3. Click **"🎮 CONVERT TO 8-BIT! 🎮"**
-4. Your converted file will be saved in the same directory with `_8bit_chiptune` suffix
+### MP3 Converter Tab
+1. **Select Input File**: Click "📁 Select MP3 File" and choose your audio file
+2. **Choose Sample Rate**: Select 11025 Hz, 22050 Hz, or 44100 Hz
+3. **Convert**: Click "🎮 CONVERT!" button
+4. **Auto-play**: Music will automatically start playing with visualization
+5. **Playback Controls**: Use "▶️ Play / ⏸️ Pause" button to control playback
 
-#### Keyboard Synth Tab:
-1. Select your waveform type (Square, Triangle, or Pulse)
-2. Press keyboard keys to play notes (see keyboard layout below)
-3. Click **"🔴 START RECORDING"** to record your melody
-4. Press keys to create your composition
-5. Click **"⏹️ STOP RECORDING"** when done
-6. Click **"▶️ PLAYBACK"** to hear your recording
-7. Click **"💾 EXPORT WAV"** to save your creation
+### Voice to 8-bit Tab (NEW!)
+1. **Start Recording**: Click "🔴 START RECORDING" button
+2. **Speak**: Record your voice (duration shown in real-time)
+3. **Stop Recording**: Click "⏹️ STOP RECORDING" when finished
+4. **Play Original**: Click "▶️ PLAY ORIGINAL" to hear raw recording
+5. **Choose Sample Rate**: Select your desired output quality
+6. **Convert**: Click "⚡ CONVERT TO 8-BIT" to apply robotic effect
+7. **Play 8-bit**: Click "🎮 PLAY 8-BIT VERSION" to hear converted audio
+8. **Save File**: Click "💾 SAVE 8-BIT AUDIO" to export as MP3
 
-### 🎹 Keyboard Layout
+### Keyboard Synthesizer Tab
+1. **Key Mapping**:
+   - **Low Octave**: V=C3, F=D3, D=E3, S=F3, A=G3, T=A3, R=B3, E=C4, W=D4, Q=E4
+   - **High Octave**: B=F4, H=G4, J=A4, K=B4, L=C5, Y=D5, U=E5, I=F5, O=G5, P=A5
 
-```
-Lower Octave (Bass):
-  Z    S    X    D    C    V    G    B    H    N    J    M
-  C3  C#3  D3  D#3  E3   F3  F#3  G3  G#3  A3  A#3  B3
+2. **Recording**:
+   - Click "🔴 START RECORDING" to begin
+   - Play notes on keyboard
+   - Click "⏹️ STOP RECORDING" to finish
 
-Middle Octave:
-  Q    2    W    3    E    R    5    T    6    Y    7    U
-  C4  C#4  D4  D#4  E4   F4  F#4  G4  G#4  A4  A#4  B4
+3. **Playback & Export**:
+   - Click "▶️ PLAYBACK" to listen to your recording
+   - Click "💾 EXPORT WAV" to save as audio file
 
-Upper Octave (Treble):
-  I    9    O    0    P
-  C5  C#5  D5  D#5  E5
-```
+4. **Enhanced Visualizer**:
+   - Click "🎮 SHOW ENHANCED VISUALIZER 🎮" for full-screen waveform display
 
-### Command Line Interface
+## Technical Details
 
-**Convert an MP3 file:**
-```bash
-python chiptune_converter.py song.mp3
-```
+### Advanced 8-bit Audio Processing
+**Extreme Mechanical Character with Hybrid Wave Synthesis**
 
-**Play a melody with the keyboard synth:**
-```bash
-python keyboard_synth.py
-```
+#### Core Processing Pipeline:
+1. **Mono Conversion**: Single channel for authentic chiptune
+2. **Sample Rate Downsampling**: Adaptive to selected rate
+3. **Extreme Bit Depth Reduction**: 6-bit quantization (64 levels) for maximum robotic crunch
+4. **Aggressive Wave Shaping**: tanh(x * 3.5) for harsh harmonic distortion
 
-## 🛠️ Technical Details
+#### Hybrid Waveform Synthesis:
+- **45% Pulse Wave**: Dominant square wave for strong mechanical "buzz"
+- **20% Triangle Wave**: Smooth melodic base for clarity
+- **35% Original Signal**: Preserves intelligibility
 
-### Audio Processing Pipeline
+#### Mechanical Modulation Effects:
+- **Vibrato**: 6.5 Hz, 2.0% depth - pronounced robotic wobble
+- **PWM (Pulse Width Modulation)**: 6 Hz, 15% depth - extreme mechanical character
+- Creates distinctive Game Boy/NES robotic voice effect
 
-1. **Loading**: Uses Pydub to load various audio formats
-2. **Downsampling**: Reduces sample rate (default: 22050 Hz)
-3. **Mono Conversion**: Converts stereo to mono for authentic chiptune feel
-4. **Bit Depth Quantization**: Reduces to 8-bit (256 levels) for retro sound
-5. **Square Wave Processing**: Adds harmonic content typical of 8-bit systems
-6. **Envelope Shaping**: Applies ADSR envelope for natural note decay
-7. **Filtering**: High-pass filter removes sub-bass (hardware limitations simulation)
-8. **Compression**: Dynamic range compression for consistent volume
+#### Dynamic Processing:
+- **Aggressive Compression**: Threshold -20dB, ratio 4.0:1
+- **Volume Reduction**: -2dB for balanced output
 
-### Synthesis Engine
+#### Frequency Filtering (Hardware Simulation):
+**High-Pass Filter**: 120 Hz (removes sub-bass)
 
-- **Waveform Generation**: Square, Triangle, and Pulse waves using scipy.signal
-- **ADSR Envelope**: Attack (5%), Decay (10%), Sustain (70%), Release (15%)
-- **Real-time Audio**: PyAudio for low-latency playback
-- **Recording System**: Timestamp-based recording for accurate playback
+**Adaptive Low-Pass Filtering**:
+- **11025 Hz**: Cut at 2.5 kHz (extreme Game Boy DMG sound)
+- **22050 Hz**: Cut at 4.0 kHz (harsh NES/retro arcade)
+- **44100 Hz**: Cut at 6.0 kHz (mechanical but clear)
 
-## 📁 Project Structure
+**Mid-Range Boost**: +2 to +4 dB for mechanical "tinny" speaker character
 
+#### Echo/Delay Effects:
+- **3 Echo Repeats**: 140ms delay intervals
+- **Strong Decay**: 65% per repeat (quiet background ambience)
+- **Decay Levels**: -13dB, -26dB, -45dB
+- Subtle spatial depth without overpowering main voice
+
+### Voice Recording System
+- **Audio Input**: sounddevice library with real-time callback streaming
+- **Format**: 16-bit PCM WAV (pygame-compatible)
+- **Sample Rates**: Configurable 11025/22050/44100 Hz
+- **Processing**: Full 8-bit conversion pipeline applied to voice
+- **Output**: MP3 format for universal compatibility
+
+### Visualization Engine
+- **Frame Rate**: ~40 FPS (0.03s audio chunks, 0.025s sleep)
+- **Feature Extraction**:
+  - RMS amplitude for energy detection
+  - Spectral centroid for pitch tracking
+  - Onset strength for beat detection
+- **Pattern Triggering**:
+  - High pitch: >3000 Hz
+  - Pitch jump: >800 Hz increase
+  - Strong beat: detected + RMS >0.3
+- **Rendering**: Tkinter Canvas with real-time text drawing
+
+### Keyboard Synthesis
+- **Waveform**: Pure sine wave generation
+- **Sampling**: 44100 Hz (CD quality)
+- **Volume**: 30% default (adjustable)
+- **Polyphony**: Single note (monophonic)
+
+## Project Structure
 ```
 TheBitverse/
-├── gui_app.py              # Main GUI application
-├── chiptune_converter.py   # MP3 to 8-bit converter
-├── keyboard_synth.py       # Interactive keyboard synthesizer
-├── requirements.txt        # Python dependencies
-├── README.md              # Documentation
-├── index.html             # Web demo (if applicable)
-├── script.js              # Web scripts
-└── style.css              # Web styles
+├── chiptune converter/
+│   ├── gui_app.py              # Main GUI application (3 tabs)
+│   ├── chiptune_converter.py   # Advanced 8-bit audio engine
+│   ├── chiptune_keyboard.py    # Keyboard synthesizer
+│   └── enhanced_visualizer.py  # Visualization system (reference)
+├── README.md
+└── requirements.txt
 ```
 
-## 🎨 Customization
+## Audio Effect Characteristics
 
-### Modify Conversion Settings
+### Mechanical Robot Voice Effect
+The 8-bit converter creates an extreme robotic/mechanical character perfect for:
+- 🤖 **Robot Voice Acting**: Game characters, AI voices, synthetic narration
+- 🎮 **Retro Game Audio**: Authentic 1980s-90s game console sound
+- 🎵 **Creative Music Production**: Vocoder-style effects, chiptune vocals
+- 🔊 **Sound Design**: Sci-fi effects, mechanical sounds, retro aesthetics
 
-Edit `chiptune_converter.py`:
-```python
-converter = ChiptuneConverter(
-    sample_rate=22050  # Try 11025 for more retro, 44100 for cleaner
-)
-```
+### Key Sound Characteristics:
+- **Harsh Digital Quantization**: 6-bit crushing for broken/pixelated sound
+- **Dominant Square Wave**: 45% pulse wave creates strong "beep-boop" quality
+- **Extreme Modulation**: Fast vibrato and PWM for robotic warble/flutter
+- **Limited Frequency Range**: 120 Hz - 6 kHz mimics cheap 8-bit speakers
+- **Aggressive Compression**: "Squashed" dynamic range typical of old hardware
+- **Subtle Echo**: Light spatial ambience without overwhelming main signal
 
-### Adjust Keyboard Volume
+### Sample Rate Impact:
+- **11025 Hz**: Most extreme/lo-fi - ultra Game Boy DMG sound
+- **22050 Hz**: Balanced retro - classic NES/arcade quality  
+- **44100 Hz**: Clear but mechanical - SNES/PS1 style with robotic edge
 
-Edit `keyboard_synth.py`:
-```python
-keyboard = ChiptuneKeyboard(
-    sample_rate=22050,
-    volume=0.3  # Range: 0.0 to 1.0
-)
-```
+## Performance Notes
+- Visualization is CPU-intensive; performance varies by system
+- Recommended: Modern multi-core CPU, 8GB+ RAM
+- Audio processing is done in separate thread to avoid UI blocking
+- Pygame mixer handles real-time audio playback
+- Voice recording requires working microphone input
 
-### Change Waveform Mix
+## Known Issues
+- Exit code 139 (segmentation fault) may occur on some macOS systems when closing - this is a known Tkinter/threading issue and doesn't affect functionality
+- Large audio files (>10MB) may take longer to process
+- Voice recording quality depends on microphone hardware
 
-In `chiptune_converter.py`, adjust the square wave mix:
-```python
-audio = self.add_square_wave_effect(audio, mix=0.2)  # Range: 0.0 to 1.0
-```
+## Tips for Best Results
+### Voice Recording:
+- Use a decent microphone for clearer input
+- Speak clearly and not too close to avoid distortion
+- Lower sample rates (11025 Hz) give more extreme robot effect
+- Higher sample rates (44100 Hz) maintain more clarity while still being robotic
 
-## 🐛 Troubleshooting
+### Music Conversion:
+- Songs with clear melody work best for visualization patterns
+- Lower sample rates emphasize retro character
+- Instrumental tracks show pattern transitions more clearly
 
-### "FFmpeg not found" error
-Make sure FFmpeg is installed and accessible in your PATH. Test with:
-```bash
-ffmpeg -version
-```
+## Credits
+- **Developer**: yy58
+- **Course**: SD5913 Creative Programming
+- **Institution**: PolyU
+- **Year**: 2025
 
-### PyAudio installation fails
-On macOS with Apple Silicon:
-```bash
-brew install portaudio
-CFLAGS="-I/opt/homebrew/include" LDFLAGS="-L/opt/homebrew/lib" pip install pyaudio
-```
+## License
+This project is created for educational purposes as part of SD5913 Creative Programming course assignment.
 
-On Linux:
-```bash
-sudo apt-get install portaudio19-dev python3-pyaudio
-pip install pyaudio
-```
-
-### No sound from keyboard
-- Check your system audio settings
-- Ensure no other applications are using the audio device
-- Try running with administrator/sudo privileges
-
-## 🎯 Future Enhancements
-
-- [ ] Add more waveform types (noise, sawtooth)
-- [ ] Implement arpeggio and vibrato effects
-- [ ] Add preset sound profiles (NES, Game Boy, C64)
-- [ ] MIDI file import/export
-- [ ] Visual waveform display
-- [ ] Multi-track recording
-- [ ] VST plugin version
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 👨‍💻 Author
-
-**YYG**
-- GitHub: [@yy58](https://github.com/yy58)
-
-## 🙏 Acknowledgments
-
-- Inspired by classic 8-bit game consoles (NES, Game Boy, C64)
-- Built with Python audio processing libraries
-- Special thanks to the chiptune music community
-
-## 📚 Resources
-
-- [8-bit Music Theory](https://en.wikipedia.org/wiki/Chiptune)
-- [Pydub Documentation](https://github.com/jiaaro/pydub)
-- [SciPy Signal Processing](https://docs.scipy.org/doc/scipy/reference/signal.html)
+## Future Enhancements
+- Multiple audio format support (WAV, FLAC, OGG)
+- Custom waveform selection for synthesis
+- MIDI file import/export
+- Real-time audio input visualization with voice effects
+- Preset pattern configurations
+- Color themes for visualization
+- Adjustable robot voice intensity slider
+- Multi-voice harmony effects
+- Voice pitch shifting controls
 
 ---
 
-**Made with ❤️ and nostalgia for SD5913 Creative Programming**
-
-🎮 *Press START to continue...* 🎮
+**Enjoy creating retro chiptune music and robotic voice effects! 🎮🎵🤖✨**

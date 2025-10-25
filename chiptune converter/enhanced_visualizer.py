@@ -220,7 +220,7 @@ class EnhancedVisualizer:
         """Generate a smoother, more realistic waveform for visualization"""
         try:
             # Get raw waveform data
-            num_points = 300
+            num_points = 500
             
             # For smoother appearance, interpolate the waveform
             import numpy as np
@@ -775,16 +775,16 @@ class EnhancedVisualizer:
                 # Wave pattern
                 wave_val = math.sin(x * 0.2 + y * 0.1 + timestamp * animation_speed) * math.cos(y * 0.1 + x * 0.05 + timestamp * 0.7)
                 
-                # Choose character
+                # Choose character - BIGGER sizes for more visible background
                 if abs(wave_val) < 0.3:
                     char = random.choice(light_chars)
-                    size = int(6 + 1 * amplitude)
+                    size = int(10 + 2 * amplitude)  # Increased from 6+1 to 10+2
                     # Dark gray for background
-                    color = "#444444"
+                    color = "#555555"  # Slightly brighter
                 else:
                     char = random.choice(medium_chars)
-                    size = int(7 + 1 * amplitude)
-                    color = "#555555"
+                    size = int(12 + 2 * amplitude)  # Increased from 7+1 to 12+2
+                    color = "#666666"  # Brighter
                 
                 # Draw background ASCII
                 self.canvas.create_text(
