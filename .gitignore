@@ -7,8 +7,14 @@ __pycache__/
 
 # Virtual Environment
 venv/
+.venv/
 env/
 ENV/
+
+# Temporary audio files
+temp_*.wav
+temp_*.mp3
+temp_*_cover.txt
 
 # IDE files
 .idea/
