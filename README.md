@@ -55,8 +55,6 @@ A creative chiptune music converter and visualizer with real-time kaomoji animat
 - Export recordings as WAV files
 - Enhanced visualizer window option
 
-## Installation
-
 ### Prerequisites
 ```bash
 # Python 3.7 or higher
@@ -267,26 +265,5 @@ The 8-bit converter creates an extreme robotic/mechanical character perfect for:
 - Lower sample rates emphasize retro character
 - Instrumental tracks show pattern transitions more clearly
 
-## Credits
-- **Developer**: yy58
-- **Course**: SD5913 Creative Programming
-- **Institution**: PolyU
-- **Year**: 2025
-
-## License
-This project is created for educational purposes as part of SD5913 Creative Programming course assignment.
-
-## Future Enhancements
-- Multiple audio format support (WAV, FLAC, OGG)
-- Custom waveform selection for synthesis
-- MIDI file import/export
-- Real-time audio input visualization with voice effects
-- Preset pattern configurations
-- Color themes for visualization
-- Adjustable robot voice intensity slider
-- Multi-voice harmony effects
-- Voice pitch shifting controls
-
----
 
 **Enjoy creating retro chiptune music and robotic voice effects! 🎮🎵🤖✨**
