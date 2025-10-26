@@ -21,7 +21,7 @@ class ChiptuneApp:
     def __init__(self, root):
         """Initialize the GUI application"""
         self.root = root
-        self.root.title("� The Bitverse - 8-Bit Chiptune Converter")
+        self.root.title("🎮 TheBitverse - 8-Bit Chiptune Converter")
         self.root.geometry("980x800")  # Increased width for better fit
         self.root.resizable(True, True)  # Allow window resizing
         self.font_family = "Megamax Jonathan Too"
@@ -149,7 +149,7 @@ class ChiptuneApp:
         
         title = tk.Label(
             title_frame,
-            text="🎮 THE CHIPTUNE CONVERTER 🎮",
+            text="🎮 THEBITVERSE 🎮",
             font=("Courier", 28, "bold"),
             fg="#00ff00",
             bg="#2d2d2d"
@@ -158,7 +158,7 @@ class ChiptuneApp:
         
         subtitle = tk.Label(
             title_frame,
-            text="8-Bit Chiptune Music Converter",
+            text="8-Bit Chiptune Music Converter & Voice Transformer",
             font=("Courier", 12),
             fg="#00ffff",
             bg="#2d2d2d"
@@ -343,6 +343,23 @@ class ChiptuneApp:
             cursor="hand2"
         )
         self.play_pause_btn.pack(pady=10)
+        
+        # Save button
+        self.save_mp3_btn = tk.Button(
+            playback_frame,
+            text="💾 Save MP3",
+            font=("Courier", 9, "bold"),
+            fg="#ffffff",
+            bg="#0066cc",
+            command=self.save_converted_mp3,
+            relief=tk.RAISED,
+            bd=2,
+            padx=15,
+            pady=8,
+            state=tk.DISABLED,
+            cursor="hand2"
+        )
+        self.save_mp3_btn.pack(pady=5)
         
         # Progress/Status
         self.status_label = tk.Label(
@@ -1116,8 +1133,9 @@ class ChiptuneApp:
         # Store converted file
         self.converted_file = output_file
         
-        # Enable playback button
+        # Enable playback and save buttons
         self.play_pause_btn.config(state=tk.NORMAL)
+        self.save_mp3_btn.config(state=tk.NORMAL)
         
         # Load audio for visualization
         try:
@@ -2283,6 +2301,30 @@ class ChiptuneApp:
                 import shutil
                 shutil.copy(self.converted_voice_file, save_path)
                 self.voice_status_label.config(text="✓ Saved!", fg="#00ff00")
+                messagebox.showinfo("Success", f"8-bit audio saved to:\n{save_path}")
+                print(f"Saved to: {save_path}")
+            except Exception as e:
+                messagebox.showerror("Save Error", f"Could not save file:\n{e}")
+                print(f"Save error: {e}")
+    
+    def save_converted_mp3(self):
+        """Save the 8-bit converted MP3 file"""
+        if not hasattr(self, 'converted_file') or not self.converted_file or not os.path.exists(self.converted_file):
+            messagebox.showwarning("No Conversion", "Please convert a file first")
+            return
+        
+        # Ask user where to save
+        save_path = filedialog.asksaveasfilename(
+            defaultextension=".mp3",
+            filetypes=[("MP3 files", "*.mp3"), ("WAV files", "*.wav"), ("All files", "*.*")],
+            title="Save 8-bit Audio"
+        )
+        
+        if save_path:
+            try:
+                import shutil
+                shutil.copy(self.converted_file, save_path)
+                self.status_label.config(text="✓ Saved!", fg="#00ff00")
                 messagebox.showinfo("Success", f"8-bit audio saved to:\n{save_path}")
                 print(f"Saved to: {save_path}")
             except Exception as e:
